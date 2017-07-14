@@ -1,1 +1,250 @@
-hello laotian
+<html>
+<head>
+<meta http-equiv='Expires' content='-1'>
+<meta http-equiv='Pragma'  content='no-cache'>
+<meta http-equiv='Cache-Control' content='no-cache'>
+<meta http-equiv="Content-Type" content="text/css; charset=GBK">
+<link rel="stylesheet" href="http://hr.tpis.tpaic.com/hr/images/default.css" type="text/css">
+<link rel="stylesheet" href="http://hr.tpis.tpaic.com/hr/images/menu.css" type="text/css">
+<link rel="stylesheet" href="http://hr.tpis.tpaic.com/hr/images/dtree/img/dtree.css" type="text/css">
+<script language="javascript" src="http://hr.tpis.tpaic.com/hr/images/tooltip.js"></script>
+<!-- <script lang="javascript" src="http://hr.tpis.tpaic.com/hr/images/common.js"></script> -->
+<script language="javascript" src="http://hr.tpis.tpaic.com/hr/js/xmlcommon.js"></script>
+<script language="javascript" src="http://hr.tpis.tpaic.com/hr/images/checkfield.js"></script>
+<script language="javascript" src="http://hr.tpis.tpaic.com/hr/js/common.js"></script>
+<script language="javascript" src="http://hr.tpis.tpaic.com/hr/js/xmlcommon.js"></script>
+<script language="javascript" src="http://hr.tpis.tpaic.com/hr/js/jquery.js"></script>
+<script language="javascript" src="http://hr.tpis.tpaic.com/hr/images/dtree/dtree.js"></script>
+
+
+<title>安盛天平外包签到小助手</title>
+<style>
+.imgpadding{
+	padding:0px;
+	cursor: pointer;
+}
+body{margin:0 auto;} 
+div{margin:0 auto;}
+.yzmbox{width:300px;padding-left:5px; margin:0 auto; font-size:12px;}
+.tdheight{height:28px; line-height:28px}
+.yzminput{width:95px; height:26px; border:0px ; background:url(http://hr.tpis.tpaic.com/hr/images/borbg.gif) no-repeat; padding:0; margin:0; line-height:26px; padding-left:25px; font-size:12px; color:#999;}
+
+
+.yzmbox span {  
+display:-moz-inline-box; 
+display:inline-block; 
+width:80px; 
+}  
+
+</style>	
+<script language="javascript">
+
+	function signin(){
+			 var loginnameOnly = $("#loginnameOnly").attr("value");
+			 var loginname= $('input:radio[name="loginname"]:checked').val();
+			 if(loginnameOnly != null && loginnameOnly != ""){
+				loginname = loginnameOnly
+			 }
+			 var verifyCode = $("#verifyCode").attr("value");
+			 if(trim(verifyCode)==''){
+			   	 alert("输一下验证码好吧！");
+			   	 onfocus();
+			 	 return false;
+			 }
+			 $.getJSON("http://hr.tpis.tpaic.com/hr/hrDomain/empExtSignInOrOut.do", {signType:"1",loginname:loginname,verifyCode:verifyCode,radom: Math.random() * 100 }, function (json) {
+				 var result = json.result;
+				 if(result=="success"){
+				   alert(loginname+":签到成功！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else if(result=="error_msg1"){
+				    alert("外包系统查无此人，赶紧去证明你就是你！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else if(result=="error_msg2"){
+				   alert("签到失败，系统中此用户存在多个，请联系HR系统管理员进行处理！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else if(result=="error_msg11"){
+				   alert("看清楚验证码好吧！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else{
+				   alert("签退失败，神都没办法了，赶紧联系管理员！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }
+		 	});
+	}
+	
+	
+	function signout(){
+		 var loginnameOnly = $("#loginnameOnly").attr("value");
+		 
+		 var loginname= $('input:radio[name="loginname"]:checked').val();
+		 
+		 if(loginnameOnly != null && loginnameOnly != ""){
+			loginname = loginnameOnly
+		 }
+		 var verifyCode = $("#verifyCode").attr("value");
+			 if(trim(verifyCode)==''){
+			   	 alert("输一下验证码好吧！");
+			   	 onfocus();
+			 	 return false;
+			 }
+			 $.getJSON("http://hr.tpis.tpaic.com/hr/hrDomain/empExtSignInOrOut.do", {signType:"2",loginname:loginname,verifyCode:verifyCode,radom: Math.random() * 100 }, function (json) {
+				 var result = json.result;
+				
+				 if(result=="success"){
+				   alert(loginname+":签退成功！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else if(result=="error_msg1"){
+				   alert("外包系统查无此人，赶紧去证明你就是你！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else if(result=="error_msg2"){
+				   alert("签退失败，系统中此用户存在多个，请联系HR系统管理员进行处理！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else if(result=="error_msg10"){
+				   alert("看清楚验证码好吧！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }else{
+				   alert("签退失败，神都没办法了，赶紧联系管理员！");
+				   $("#verifyCode").attr("value","");
+				   reloadVerifyCode();
+				 }
+		 		});
+		 			 
+		 	  		 
+	}
+	
+	function showdate(n) { //得到前N天或后N天的时间
+		var uom = new Date(new Date()-0+n*86400000); 
+		var curYear=uom.getFullYear();
+		var curMonth=uom.getMonth()+1;
+		var curDate=uom.getDate();
+		if(parseInt(curMonth)<10){
+			curMonth="0"+curMonth;
+		}
+		if(parseInt(curDate)<10){
+			curDate="0"+curDate;
+		}
+		uom = curYear + "-" + curMonth+ "-" +curDate; 
+		return uom; 
+	} 
+	
+	function trim(str) { //删除左右两端的空格
+	    return str.replace(/(^\s*)|(\s*$)/g, "");
+	}
+	
+	function openwindow(url,name,iWidth,iHeight){	
+	var iTop = (window.screen.availHeight-iHeight)/2; //获得窗口的垂直位置;
+	var iLeft = (window.screen.availWidth-iWidth)/2; //获得窗口的水平位置;
+	var a=window.open(url,name,'height='+iHeight+',width='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=yes,resizeable=no,location=no,status=no');
+	a.focus();	
+	
+}
+   
+
+ function reloadVerifyCode(){  
+      var timenow = new Date().getTime();                          
+      document.getElementById("safecode").src="http://hr.tpis.tpaic.com/hr/servlet/ImageServlet?d="+timenow;  
+   	  onfocus();
+   } 
+   
+ function toUpStr(obj){ 
+      if(obj.value != obj.value.toUpperCase()){ // 判断很重要,否则方向键将被锁住 
+     	   obj.value=obj.value.toUpperCase();   
+      	}                
+      }     
+
+
+ function hotkey()
+	{
+		var w= window.event.keyCode;
+		//shiftKey  ctrlKey 
+		if((w==89)&&(event.altKey)){//alt+y
+			signin();
+		}
+		if((w==85)&&(event.altKey)){//alt+u
+			signout();
+		}
+	}
+	
+  	document.onkeydown=hotkey;
+
+	function onfocus(){
+		var oInput = document.getElementById("verifyCode");
+		oInput.focus();
+	}
+	
+	function cleanUserName(){
+	
+		document.getElementById("loginnameOnly").value = "";
+	}
+		
+</script>
+
+</head>
+<body topmargin="0" leftmargin="0" width="100%">
+
+	<table width="100%" cellpadding="0" cellspacing="0" border="0" id="fileTable1" style="height:110px;border:#41a0ce 1px solid">
+	
+	<tr width=100% > 
+		<td style="background:url('http://hr.tpis.tpaic.com/images/mjIma1.jpg');height:27px!important;height:30px;border-bottom: 1px solid #41A0CE;">
+			<span>&nbsp;&nbsp;【签到小助手】</span>
+			<span class="rightSpanCss1" style="color:#838383;">
+				&nbsp;&nbsp; Alt+Y = 签到 / Alt+U = 签退
+			</span>
+			<p>&nbsp;&nbsp;【优先取文本框中的用户】
+		</td>
+	</tr>
+	
+	<tr>
+	<td>
+
+	<div class="yzmbox">
+	    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+	    	<tr>
+			    <td  class="tdheight" style="padding-bottom:3px">
+					用户名：<input id='loginnameOnly'  maxlength="20" style="width:120px" name="loginnameOnly" value="" />
+					<input id="cleanUserName_id" value = "cleanUserName" type = "button" onclick="cleanUserName()"/>
+					<p>
+					<input type="radio" name="loginname" value="ex_yucheng.tian" checked="checked" />田雨成（ex_yucheng.tian）<p>
+					<input type="radio" name="loginname" value="ex_gejinsheng"/>葛进生（ex_gejinsheng）<p>
+					<input type="radio" name="loginname" value="ex_lijiansheng"/>李建生（ex_lijiansheng）<p>
+					<input type="radio" name="loginname" value="ex_xiongyan"/>熊艳（ex_xiongyan）<p>
+					<input type="radio" name="loginname" value="ex_sunsulei"/>孙苏磊（ex_sunsulei）<p>
+					<input type="radio" name="loginname" value="ex_lilucheng"/>李露晨（ex_lilucheng）<p>
+					<input type="radio" name="loginname" value="ex_tianshaolin"/>田少林（ex_tianshaolin）<p>
+				</td>
+		   	</tr>
+			
+			<tr>
+				<td>
+					<span>验证码：</span>
+					<input id='verifyCode'  maxlength="20" style="width:120px" onkeyup="toUpStr(this)" name="verifyCode" /><p>
+					
+					<span>&nbsp;</span>
+					<img alt="验证码" id="safecode"  src="http://hr.tpis.tpaic.com/hr/servlet/ImageServlet">
+					<a href="javascript:void(0);" onclick="javascript:reloadVerifyCode();return false;">&nbsp;看不清来戳我</a>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="3" class="tdheight" style="padding-top:20px">
+					<img src="http://hr.tpis.tpaic.com/hr/images/btn01.gif"  class="imgpadding" onclick='signin()' />&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="http://hr.tpis.tpaic.com/hr/images/btn02.gif"  class="imgpadding" onclick='signout()' />
+				</td>
+				<td>
+			</tr>
+	    </table>
+	</div>
+	</td>
+	</tr>
+</table>
+</body>
+</html>
